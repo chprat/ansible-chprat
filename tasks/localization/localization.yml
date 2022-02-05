@@ -1,0 +1,38 @@
+# Requires community.general
+# ansible-galaxy collection install community.general
+- name: Install de_DE.UTF-8
+  become: yes
+  community.general.locale_gen:
+    name: de_DE.UTF-8
+    state: present
+
+- name: Install en_US.UTF-8
+  become: yes
+  community.general.locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+- name: Change locale
+  become: yes
+  shell: update-locale LANG=de_DE.UTF-8
+
+- name: Remove en_GB.UTF-8
+  become: yes
+  community.general.locale_gen:
+    name: en_GB.UTF-8
+    state: absent
+
+- name: Change timezone
+  become: yes
+  shell: timedatectl set-timezone Europe/Berlin
+
+- name: Change keyboard layout
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/default/keyboard
+    regexp: ^XKBLAYOUT.*
+    line: XKBLAYOUT="de"
+
+- name: Update keyboard layout
+  become: yes
+  shell: dpkg-reconfigure -f noninteractive keyboard-configuration

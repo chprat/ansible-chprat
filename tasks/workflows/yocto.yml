@@ -1,0 +1,55 @@
+# Requires ansible.posix
+# ansible-galaxy collection install ansible.posix
+- name: Copy GH private key
+  ansible.builtin.copy:
+    src: "{{ lookup('env', 'HOME') }}/.ssh/key_github"
+    dest: /home/{{ user_name }}/.ssh/key_github
+    owner: "{{ user_name }}"
+    group: "{{ user_group }}"
+    mode: "0600"
+
+- name: Extend ~/.ssh/config
+  ansible.builtin.blockinfile:
+    path: /home/{{ user_name }}/.ssh/config
+    block: "{{ lookup('file', '../../data/config.txt') }}"
+    create: yes
+
+- include_tasks: ../software/bmap-tools.yml
+
+- include_tasks: ../software/git.yml
+
+- include_tasks: ../software/kas-container.yml
+
+- name: Check if repository already exists
+  stat:
+    path: /home/{{ user_name }}/meta-chprat
+  register: repository_exists
+
+- name: Checkout repository
+  ansible.builtin.git:
+    repo: git@github.com:chprat/meta-chprat.git
+    dest: /home/{{ user_name }}/meta-chprat
+    accept_hostkey: yes
+    update: no
+  when: not repository_exists.stat.exists
+
+- include_tasks: ../software/docker.yml
+
+- include_tasks: ../users/user-git.yml
+
+- include_tasks: ../software/nfs.yml
+
+- name: Create NFS Yocto cache mount point
+  file:
+    path: /home/{{ user_name }}/yocto
+    state: directory
+
+- name: fstab NFS Yocto caches entry
+  become: yes
+  ansible.posix.mount:
+    src: diskstation:/volume1/yocto/meta-chprat-caches
+    path: /home/{{ user_name }}/yocto/
+    opts: vers=4,user,rw
+    boot: no
+    state: present
+    fstype: nfs

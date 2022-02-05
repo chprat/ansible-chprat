@@ -1,0 +1,5 @@
+- name: Install bmap-tools
+  become: yes
+  apt:
+    name: bmap-tools
+    update-cache: yes

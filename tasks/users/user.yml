@@ -1,0 +1,25 @@
+- include_tasks: initial-user.yml
+
+- name: Append to ~/.bashrc
+  ansible.builtin.blockinfile:
+    path: /home/{{ user_name }}/.bashrc
+    block: |
+      bind "set completion-ignore-case on"
+      bind "set show-all-if-ambiguous on"
+      function cdn(){ for i in `seq $1`; do cd ..; done;}
+      mcd () { mkdir -p "$1" && cd "$1"; }
+      function  sysupgr(){ sudo apt update && sudo apt upgrade -y && sudo apt dist-upgrade -y && sudo apt autoremove -y && dpkg -l |grep ^rc | awk "{ print $2 }" | xargs sudo apt purge -y; }
+      alias ll="ls -alF"
+      if [ -d /home/{{ user_name }}/.local/bin ]; then
+          path+=("/home/{{ user_name }}/.local/bin")
+      fi
+
+- include_tasks: ../software/interactive-tools.yml
+
+- name: Remove default user
+  become: yes
+  ansible.builtin.user:
+    name: pi
+    force: yes
+    remove: yes
+    state: absent

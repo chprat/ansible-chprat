@@ -1,0 +1,29 @@
+# Requires community.general
+# ansible-galaxy collection install community.general
+# Requires ansible.posix
+# ansible-galaxy collection install ansible.posix
+
+---
+- name: Initial setup rpi48
+  remote_user: pi
+  hosts: rpi48
+  ignore_unreachable: yes
+  ignore_errors: yes
+  vars_files:
+    - vars/user.yml
+
+  tasks:
+    - include_tasks: tasks/users/initial-user.yml
+
+- name: Setup rpi48
+  remote_user: cpr
+  hosts: rpi48
+  vars_files:
+    - vars/user.yml
+
+  tasks:
+    - include_tasks: tasks/users/user.yml
+    - include_tasks: tasks/software/upgrade.yml
+    - include_tasks: tasks/localization/localization.yml
+    - include_tasks: tasks/hardware/raspberrypi.yml
+    - include_tasks: tasks/workflows/yocto.yml

@@ -1,0 +1,9 @@
+- name: Install interactive usage tools
+  become: yes
+  apt:
+    name:
+      - mc
+      - ranger
+      - tmux
+      - vim
+    update-cache: yes

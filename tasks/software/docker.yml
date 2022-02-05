@@ -1,0 +1,12 @@
+- name: Install docker
+  become: yes
+  apt:
+    name: docker.io
+    update-cache: yes
+
+- name: Add user to docker group
+  become: yes
+  user:
+    name: "{{ user_name }}"
+    groups: docker
+    append: yes

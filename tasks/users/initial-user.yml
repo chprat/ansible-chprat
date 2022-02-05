@@ -1,0 +1,30 @@
+# Requires ansible.posix
+# ansible-galaxy collection install ansible.posix
+- name: Create user
+  become: yes
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    password: "{{ user_password }}"
+    uid: 1026
+    group: "{{ user_group }}"
+    groups:
+      - adm
+      - dialout
+      - cdrom
+      - sudo
+      - audio
+      - video
+      - plugdev
+      - games
+      - users
+      - input
+      - netdev
+      - gpio
+      - i2c
+      - spi
+
+- name: Add SSH public key
+  become: yes
+  ansible.posix.authorized_key:
+    user: "{{ user_name }}"
+    key: "{{ lookup('file', '{{ user_pubkey }}') }}"

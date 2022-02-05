@@ -1,0 +1,6 @@
+- name: Install updates
+  become: true
+  apt:
+    update-cache: yes
+    upgrade: full
+    autoremove: yes

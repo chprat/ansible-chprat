@@ -1,0 +1,10 @@
+- name: Install git
+  become: yes
+  apt:
+    name: git
+    update-cache: yes
+
+- include_tasks: rust.yml
+
+- name: Install GitUI
+  shell: . /home/{{ user_name }}/.cargo/env && cargo install gitui

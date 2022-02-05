@@ -1,0 +1,23 @@
+- name: Configure git user name
+  community.general.git_config:
+    name: user.name
+    scope: global
+    value: "{{ git_name }}"
+
+- name: Configure git user mail
+  community.general.git_config:
+    name: user.email
+    scope: global
+    value: "{{ git_mail }}"
+
+- name: Configure git editor
+  community.general.git_config:
+    name: core.editor
+    scope: global
+    value: vim
+
+- name: Configure git color
+  community.general.git_config:
+    name: color.ui
+    scope: global
+    value: auto
